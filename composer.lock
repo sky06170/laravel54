@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "96098e473b028cdb2529580554a1ae3e",
+    "content-hash": "cfbbde20dfa389bd4d43a2eef3c6a73d",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -153,6 +153,64 @@
             "time": "2018-03-08T01:11:30+00:00"
         },
         {
+            "name": "facebook/graph-sdk",
+            "version": "5.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/php-graph-sdk.git",
+                "reference": "030f8c5b9b1a6c09e71719fd638b66ea4daa2f10"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/php-graph-sdk/zipball/030f8c5b9b1a6c09e71719fd638b66ea4daa2f10",
+                "reference": "030f8c5b9b1a6c09e71719fd638b66ea4daa2f10",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4|^7.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client",
+                "paragonie/random_compat": "Provides a better CSPRNG option in PHP 5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Facebook\\": "src/Facebook/"
+                },
+                "files": [
+                    "src/Facebook/polyfills.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Facebook Platform"
+            ],
+            "authors": [
+                {
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/php-graph-sdk/contributors"
+                }
+            ],
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/php-graph-sdk",
+            "keywords": [
+                "facebook",
+                "sdk"
+            ],
+            "time": "2018-02-14T23:24:51+00:00"
+        },
+        {
             "name": "jakub-onderka/php-console-color",
             "version": "0.1",
             "source": {
@@ -238,6 +296,44 @@
                 }
             ],
             "time": "2015-04-20T18:58:01+00:00"
+        },
+        {
+            "name": "juksy/shredder",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/juksy/shredder.git",
+                "reference": "86ad7f48844e66155237c140766a084849789a68"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/juksy/shredder/zipball/86ad7f48844e66155237c140766a084849789a68",
+                "reference": "86ad7f48844e66155237c140766a084849789a68",
+                "shasum": ""
+            },
+            "require": {
+                "facebook/graph-sdk": "^5.4",
+                "illuminate/http": "^5.4",
+                "illuminate/support": "^5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Juksy\\Shredder\\": "src/Shredder"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "easontsai",
+                    "email": "easontsai@juksy.com"
+                }
+            ],
+            "description": "Facebook Helper",
+            "time": "2017-09-25T09:57:37+00:00"
         },
         {
             "name": "laravel/framework",
@@ -3443,7 +3539,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "juksy/shredder": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
