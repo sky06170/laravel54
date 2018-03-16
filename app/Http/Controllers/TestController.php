@@ -35,8 +35,6 @@ class TestController extends Controller
 
         $result = app('shredder')->postFeed(env('JUKSY_FB_PAGE_TOKEN'), $post);
 
-        Log::info(json_encode($result));
-
         return json_encode($result);
     }
 
@@ -81,7 +79,9 @@ class TestController extends Controller
 
     public function deleteMessage(Request $request)
     {
-        $postID = '1261910873819373_2121466434530475';
+        //$postID = '1261910873819373_2121466434530475';
+
+        $postID = $request->get('postID','');
 
         try{
 
