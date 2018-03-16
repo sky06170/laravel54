@@ -21,6 +21,8 @@ Route::group(['prefix' => '/test'], function(){
 
     Route::get('/publishArticle','TestController@publishArticle');
 
+    Route::get('/deleteArticle','TestController@deleteArticle');
+
     Route::get('/postMessage','TestController@postMessage');
 
     Route::get('/deleteMessage','TestController@deleteMessage');

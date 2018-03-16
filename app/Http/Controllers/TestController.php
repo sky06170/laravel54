@@ -38,6 +38,15 @@ class TestController extends Controller
         return json_encode($result);
     }
 
+    public function deleteArticle(Request $request)
+    {
+        $post = $this->articleRepo->makePost($request->get('postID',''));
+
+        $result = app('shredder')->delete(env('JUKSY_FB_PAGE_TOKEN'), $post);
+
+        return json_encode($result);
+    }
+
     public function postMessage()
     {
         try{

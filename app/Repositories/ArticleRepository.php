@@ -32,4 +32,13 @@ class ArticleRepository
         return $post;
     }
 
+    public function makePost($postID)
+    {
+        // New a entity
+        $post = new Post();
+        $post->post_id = $postID;
+
+        return $post;
+    }
+
 }
