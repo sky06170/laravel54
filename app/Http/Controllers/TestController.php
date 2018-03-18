@@ -6,9 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ArticleRepository;
 use Carbon\Carbon;
+use App\Traits\Date;
+use App\Services\Facebook\Pages;
 
 class TestController extends Controller
 {
+
+    use Date;
 
     protected $articleRepo;
 
@@ -47,77 +51,34 @@ class TestController extends Controller
         return json_encode($result);
     }
 
+    /**
+     * 發布粉絲團貼文
+     */
     public function postMessage()
     {
-        try{
+        $publish_time = '2018-03-18 16:23:00';
 
-            $datetime = Carbon::now('Asia/Taipei')->toDateTimeString();
+        $message = 'test post';
 
-            $publish_time = Carbon::now('Asia/Taipei')->addSecond(15)->toDateTimeString();
+        $pages = new Pages();
 
-            echo $publish_time.'<br>';
+        $result = $pages->publishScheduled($message,$publish_time);
 
-            $request = [
-                'access_token' => env('JUKSY_FB_PAGE_TOKEN'),
-                'message' => 'laravel Test !'.$datetime,
-                'published' => false,
-                'scheduled_publish_time' => Carbon::parse($publish_time)->getTimestamp()
-            ];
-
-            $ch = curl_init('https://graph.facebook.com/v2.12/'.env('JUKSY_FB_PAGES').'/feed');
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-            curl_exec($ch);
-            curl_close($ch);
-
-            echo json_encode(array(
-                'bool' => true
-            ));
-
-
-
-        }catch(\Exception $e){
-
-            echo json_encode(array(
-                'bool' => false
-            ));
-
-        }
+        return $result;
     }
 
+    /**
+     * 刪除紛絲團貼文
+     */
     public function deleteMessage(Request $request)
     {
-        //$postID = '1261910873819373_2121466434530475';
-
         $postID = $request->get('postID','');
 
-        try{
+        $pages = new Pages();
 
-            $request = [
-                'access_token' => env('JUKSY_FB_PAGE_TOKEN')
-            ];
+        $result = $pages->delete($postID);
 
-            $ch = curl_init('https://graph.facebook.com/v2.12/'.$postID);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-            curl_exec($ch);
-            curl_close($ch);
-
-            echo json_encode(array(
-                'bool' => true
-            ));
-
-
-
-        }catch(\Exception $e){
-
-            echo json_encode(array(
-                'bool' => false
-            ));
-
-        }
+        return $result;
     }
+
 }
