@@ -2,12 +2,11 @@
 
 namespace App\Services\Facebook;
 
-use App\Traits\Date;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
 
 class Pages
 {
-
-    use Date;
 
     public $vision;
 
@@ -25,13 +24,47 @@ class Pages
     }
 
     /**
+     * 日期時間物件
+     *
+     * @param string $tz
+     * @return object
+     */
+    private function nowDatetime($tz = 'Asia/Taipei')
+    {
+        return Carbon::now($tz);
+    }
+
+    /**
+     * 日期時間字串轉日期時間物件
+     *
+     * @param string $datetime
+     * @param string $tz
+     * @return object
+     */
+    private function datetimeObject($datetime = '1970-01-01 00:00:00',$tz = 'Asia/Taipei')
+    {
+        return Carbon::createFromFormat('Y-m-d H:i:s',$datetime,$tz);
+    }
+
+    /**
+     * 日期時間字串轉unix timestamp
+     *
+     * @param string $datetime
+     * @return int
+     */
+    private function timeStamp($datetime = '1970-01-01 00:00:00')
+    {
+        return Carbon::parse($datetime)->getTimestamp();
+    }
+
+    /**
      * 排程發佈時間(起始)
      *
      * @return String
      */
     private function startScheduledPublishTime()
     {
-        return Date::now()->subHour(8)->addMinute(10)->addSecond(30)->toDateTimeString();
+        return $this->nowDatetime()->subHour(8)->addMinute(10)->addSecond(30)->toDateTimeString();
     }
 
     /**
@@ -41,7 +74,7 @@ class Pages
      */
     private function endScheduledPublishTime()
     {
-        return Date::now()->subHour(8)->addMonth(6)->addSecond(30)->toDateTimeString();
+        return $this->nowDatetime()->subHour(8)->addMonth(6)->addSecond(30)->toDateTimeString();
     }
 
     /**
@@ -52,7 +85,7 @@ class Pages
      */
     private function scheduledPublishTime($publish_datetime)
     {
-        return Date::object($publish_datetime)->subHour(8)->addSecond(30)->toDateTimeString();
+        return $this->datetimeObject($publish_datetime)->subHour(8)->addSecond(30)->toDateTimeString();
     }
 
     /**
@@ -61,16 +94,15 @@ class Pages
      * @param $publish_datetime
      * @return bool
      */
-    private function isInScheduledPublishTimeRange($publish_datetime)
+    private function inScheduledPublishTimeRange($publish_datetime)
     {
-        $startTimestamp = Date::timeStamp($this->startScheduledPublishTime());
+        $startTimestamp = $this->timeStamp($this->startScheduledPublishTime());
 
-        $endTimestamp = Date::timeStamp($this->endScheduledPublishTime());
+        $endTimestamp = $this->timeStamp($this->endScheduledPublishTime());
 
-        $publishTimestamp = Date::timeStamp($publish_datetime);
+        $publishTimestamp = $this->timeStamp($publish_datetime);
 
-        if($startTimestamp <= $publishTimestamp && $publishTimestamp <= $endTimestamp)
-        {
+        if($startTimestamp <= $publishTimestamp && $publishTimestamp <= $endTimestamp){
             return true;
         }
 
@@ -85,20 +117,16 @@ class Pages
      */
     public function publish($message)
     {
-        $request = [
+        $targetUrl = 'https://graph.facebook.com/'.$this->vision.'/'.$this->pagesID.'/feed';
+
+        $formParams = [
             'access_token' => $this->pagesToken,
             'message' => $message
         ];
 
-        $ch = curl_init('https://graph.facebook.com/'.$this->vision.'/'.$this->pagesID.'/feed');
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        $result = curl_exec($ch);
-        curl_close($ch);
+        $response = $this->sendRequest('POST',$targetUrl,$formParams);
 
-        return $result;
+        return $response->getBody();
     }
 
     /**
@@ -110,30 +138,24 @@ class Pages
      */
     public function publishScheduled($message,$scheduled_publish_datetime = null)
     {
-
         $publish_datetime = $this->scheduledPublishTime($scheduled_publish_datetime);
 
-        if(!$this->isInScheduledPublishTimeRange($publish_datetime))
-        {
-            return false;
+        if(!$this->inScheduledPublishTimeRange($publish_datetime)){
+            return response()->json(['error' => 'publish time invalid']);
         }
 
-        $request = [
+        $targetUrl = 'https://graph.facebook.com/'.$this->vision.'/'.$this->pagesID.'/feed';
+
+        $formParams = [
             'access_token' => $this->pagesToken,
             'message' => $message,
             'published' => false,
-            'scheduled_publish_time' => Date::timeStamp($publish_datetime)
+            'scheduled_publish_time' => $this->timeStamp($publish_datetime)
         ];
 
-        $ch = curl_init('https://graph.facebook.com/'.$this->vision.'/'.$this->pagesID.'/feed');
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        $result = curl_exec($ch);
-        curl_close($ch);
+        $response = $this->sendRequest('POST',$targetUrl,$formParams);
 
-        return $result;
+        return $response->getBody();
     }
 
     /**
@@ -144,20 +166,35 @@ class Pages
      */
     public function delete($postID = '')
     {
-        $request = [
+        $targetUrl = 'https://graph.facebook.com/'.$this->vision.'/'.$postID;
+
+        $formParams = [
             'access_token' => $this->pagesToken
         ];
 
-        $ch = curl_init('https://graph.facebook.com/'.$this->vision.'/'.$postID);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        $result = curl_exec($ch);
-        curl_close($ch);
+        $response = $this->sendRequest('DELETE',$targetUrl,$formParams);
 
-        return $result;
+        return $response->getBody();
+    }
+
+    /**
+     * 發送請求
+     *
+     * @param $method
+     * @param $uri
+     * @param $formParams
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     */
+    private function sendRequest($method,$uri,$formParams)
+    {
+        $client = new Client();
+
+        return $client->request($method,$uri,[
+            'form_params' => $formParams,
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ]
+        ]);
     }
 
 }
