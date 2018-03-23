@@ -38,8 +38,6 @@ class YoutubeController extends Controller
     {
         $reponse = $this->youtubeService->getWatchInfo($request);
 
-        dd($reponse);
-
         $video = $reponse['video'];
 
         $items = $reponse['items'];

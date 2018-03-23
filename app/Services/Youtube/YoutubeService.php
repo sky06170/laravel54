@@ -14,7 +14,7 @@ class YoutubeService{
 	{
 		$this->youtubePlaylist = $this->setYoutubePlaylist();
 
-		$this->defaultYoutubePlaylist = $this->setDefaultYoutubePlaylist();
+		$this->defaultYoutubePlaylist = '潮物開箱';
 	}
 
 	/**
@@ -40,25 +40,6 @@ class YoutubeService{
                 'img' => 'https://i.ytimg.com/vi/tq9mkg6oTVM/hqdefault.jpg',
             ],
         ];
-    }
-
-    public function setDefaultYoutubePlaylist()
-    {
-    	$defaultYoutubePlaylist = '';
-
-    	foreach($this->youtubePlaylist as $key => $list){
-
-    		if($defaultYoutubePlaylist != ''){
-
-    			break;
-
-    		}
-
-    		$defaultYoutubePlaylist = $key;
-
-    	}
-
-    	return $defaultYoutubePlaylist;
     }
 
     /**
@@ -150,9 +131,7 @@ class YoutubeService{
 
  		}
 
- 		$allPlaylistItems = $this->getAllPlaylistItems();
-
-		$PlaylistItemsID = $this->getPlaylistItemsByID($v, $allPlaylistItems);
+		$PlaylistItemsID = $this->getPlaylistItemsByID($v, $this->getAllPlaylistItems());
 
 		$items = Youtube::getPlaylistItemsByPlaylistId($PlaylistItemsID);
 
