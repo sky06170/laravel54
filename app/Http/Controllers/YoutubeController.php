@@ -25,24 +25,22 @@ class YoutubeController extends Controller
     {
         $playlist = $this->youtubeService->youtubePlaylist;
 
-        $videos = $this->youtubeService->getVideos(24);
+        $videos = $this->youtubeService->getAllPlaylistItems(24);
 
         $data = compact('playlist', 'videos');
-
-        dd($videos);
         
-        return view('youtube', $data);
+        return view('youtube.index', $data);
     }
 
     public function watch(Request $request)
     {
         $reponse = $this->youtubeService->getWatchInfo($request);
 
-        $video = $reponse['video'];
-
-        $items = $reponse['items'];
-
-        return 'watch';
+        return view('youtube.watch', [
+            'video' => $reponse['video'],
+            'items' => $reponse['items'],
+            'nextVideoID' => $reponse['nextVideoID']
+        ]);
     }
 
 }

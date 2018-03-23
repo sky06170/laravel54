@@ -3,6 +3,7 @@
 namespace App\Services\Youtube;
 
 use Madcoda\Youtube\Facades\Youtube;
+use Illuminate\Support\Facades\Log;
 
 class YoutubeService{
 
@@ -18,7 +19,7 @@ class YoutubeService{
 	}
 
 	/**
-	 * set default Playlist
+	 * 設定預設播放清單
 	 * @return array Playlist
 	 */
 	public function setYoutubePlaylist()
@@ -43,72 +44,82 @@ class YoutubeService{
     }
 
     /**
-     * get all PlaylistItems
-     * @return array|null [description]
+     * 取得所有播放清單影片
+     * @return array|null
      */
-    public function getAllPlaylistItems()
+    public function getAllPlaylistItems($maxResults = null)
     {
     	$datas = [];
-
-    	foreach($this->youtubePlaylist as $list){
-
-   			$items = Youtube::getPlaylistItemsByPlaylistId($list['id']);
-
-			if($items != null){
-
-				foreach($items as $item){
-
-					$item->PlaylistItemsID = $list['id'];
-
-					array_push($datas,$item);
-
-				}
-
-			}
-
-    	}
-
-    	return $datas;
-    }
-
-    /**
-     * get videos
-     * @param  integer $maxResults 
-     * @return array $videos
-     */
-    public function getVideos($maxResults = 24)
-    {
     	$videos = [];
 
-    	$allPlaylistItems = $this->getAllPlaylistItems();
+    	foreach($this->youtubePlaylist as $key => $list){
+   			$items = Youtube::getPlaylistItemsByPlaylistId($list['id']);
+			if($items != null){
+				foreach($items as $item){
+					$item->PlaylistItmesName = $key;
+					$item->PlaylistItemsID = $list['id'];
+					$datas[$item->snippet->publishedAt] = $item;
+				}
+			}
+    	}
 
-    	$videos = array_slice($allPlaylistItems, 0, $maxResults);
+    	if(count($datas) > 0 && $maxResults != null){
+    		$videos = array_slice($datas, 0, $maxResults);
+    	}
 
-    	return $videos;
+    	krsort($videos);
+
+    	return array_values($videos);
     }
 
     /**
-     * get video
+ 	 * get watch blade data info
+ 	 * @param  [type] $request [description]
+ 	 * @return [type]          [description]
+ 	 */
+ 	public function getWatchInfo($request)
+ 	{
+ 		$v = $request->input('v','');
+
+        $playlist = $request->input('playlist','');
+
+        if($v != ''){
+        	$response = $this->watchByID($v);
+        }else{
+        	$response = $this->watchByName($playlist);
+        }
+
+        if(!$response['status']){
+        	$response = $this->watchDefault();
+        }
+
+        return $response;
+ 	}
+
+    /**
+     * 取得影片
      * @param  string $v video id
      * @return object $vedio
      */
-    public function getVideoByID($v = '')
+    private function getVideoByID($v = '')
     {
     	return Youtube::getVideoInfo($v);
     }
 
-    public function getPlaylistItemsByID($v,$allPlaylistItems)
+    /**
+     * 取得播放清單ID
+     * @param  string $v                影片ID
+     * @param  array  $allPlaylistItems 所有播放清單影片
+     * @return string
+     */
+    private function getPlaylistItemsIDByID($v,$allPlaylistItems)
     {
 		$PlaylistItemsID = '';
 
     	foreach($allPlaylistItems as $item){
-
  			if($v == $item->contentDetails->videoId){
-
  				$PlaylistItemsID = $item->PlaylistItemsID;
-
  			}
-
  		}
 
  		return $PlaylistItemsID;
@@ -119,46 +130,43 @@ class YoutubeService{
      * @param  [type] $v [description]
      * @return [type]    [description]
      */
- 	public function watchByID($v)
+ 	private function watchByID($v)
  	{
  		$response = [];
 
  		$video = $this->getVideoByID($v);
 
  		if(!$video){
-
  			return ['status' => false];
-
  		}
 
-		$PlaylistItemsID = $this->getPlaylistItemsByID($v, $this->getAllPlaylistItems());
+		$PlaylistItemsID = $this->getPlaylistItemsIDByID($v, $this->getAllPlaylistItems());
 
 		$items = Youtube::getPlaylistItemsByPlaylistId($PlaylistItemsID);
+
+		$nextVideoID = $this->getPlaylistItemsNextVideoID($v,$items);
 
 		return [
 			'status' => (!$video ? false : true),
 			'video' => $video,
-			'items' => $items
+			'items' => $items,
+			'nextVideoID' => $nextVideoID
 		];
  	}
 
  	/**
- 	 * get PlaylistItems by playlist parameter
- 	 * @param  [type] $playlist [description]
- 	 * @return [type]           [description]
+ 	 * 取得播放清單ID
+ 	 * @param  string $playlist 播放清單名稱
+ 	 * @return string           
  	 */
- 	public function getPlaylistItemsByName($playlist)
+ 	private function getPlaylistItemsByName($playlist)
     {
 		$PlaylistItemsID = '';
 
     	foreach($this->youtubePlaylist as $key => $list){
-
  			if($playlist == $key){
-
  				$PlaylistItemsID = $list['id'];
-
  			}
-
  		}
 
  		return $PlaylistItemsID;
@@ -169,26 +177,27 @@ class YoutubeService{
      * @param  [type] $playlist [description]
      * @return [type]           [description]
      */
-    public function watchByName($playlist)
+    private function watchByName($playlist)
  	{
  		$response = [];
 
  		$PlaylistItemsID = $this->getPlaylistItemsByName($playlist);
 
  		if($PlaylistItemsID == ''){
-
  			return ['status' => false];
-
  		}
 
 		$items = Youtube::getPlaylistItemsByPlaylistId($PlaylistItemsID);
 
 		$video = $this->getVideoByID($items[0]->contentDetails->videoId);
 
+		$nextVideoID = $this->getPlaylistItemsNextVideoID($items[0]->contentDetails->videoId,$items);
+
 		return [
 			'status' => ($PlaylistItemsID == '' ? false : true),
 			'video' => $video,
-			'items' => $items
+			'items' => $items,
+			'nextVideoID' => $nextVideoID
 		];
  	}
 
@@ -196,42 +205,34 @@ class YoutubeService{
  	 * watch blade default data info
  	 * @return [type] [description]
  	 */
- 	public function watchDefault()
+ 	private function watchDefault()
  	{
  		return $this->watchByName($this->defaultYoutubePlaylist);
  	}
 
  	/**
- 	 * get watch blade data info
- 	 * @param  [type] $request [description]
- 	 * @return [type]          [description]
+ 	 * 取得播放清單的下一則影片ID
+ 	 * @param  string $v     影片ID
+ 	 * @param  array  $items 影片清單
+ 	 * @return string
  	 */
- 	public function getWatchInfo($request)
+ 	private function getPlaylistItemsNextVideoID($v,$items)
  	{
- 		$response = [];
+ 		$nextVedioID = $items[0]->contentDetails->videoId;
 
- 		$v = $request->input('v','');
+ 		$nextSwitch = false;
 
-        $playlist = $request->input('playlist','');
+ 		foreach($items as $item){
+ 			if($nextSwitch == true){
+ 				$nextVedioID = $item->contentDetails->videoId;
+ 				break;
+ 			}
+ 			if(!$nextSwitch && $v == $item->contentDetails->videoId){
+ 				$nextSwitch = true;
+ 			}
+ 		}
 
-        if($v != ''){
-
-        	$response = $this->watchByID($v);
-
-        }else{
-
-        	$response = $this->watchByName($playlist);
-
-        }
-
-        if(!$response['status']){
-
-        	$response = $this->watchDefault();
-
-        }
-
-        return $response;
-
+ 		return $nextVedioID;
  	}
 
 }

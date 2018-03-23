@@ -1,3 +1,4 @@
+@inject('youtubePresenter','\App\Presenters\YoutubePresenter');
 <!doctype html>
 <html lang="{{ app()->getLocale() }}">
     <head>
@@ -69,9 +70,9 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    
+                    Youtube
                 </div>
-
+                <hr>
                 <!-- <div class="links">
                     <a href="https://laravel.com/docs">Documentation</a>
                     <a href="https://laracasts.com">Laracasts</a>
@@ -79,6 +80,15 @@
                     <a href="https://forge.laravel.com">Forge</a>
                     <a href="https://github.com/laravel/laravel">GitHub</a>
                 </div> -->
+                @foreach($videos as $key => $video)
+                    <div>
+                        <p><img src="{{ $youtubePresenter->getVideoImg($video) }}"></p>
+                        <p>No：{{ $key }}</p>
+                        <p>類別：{{ $video->PlaylistItmesName }}</p>
+                        <p>標題：{{ $youtubePresenter->getVideoTitle($video) }}</p>
+                    </div>
+                    <hr>
+                @endforeach
             </div>
         </div>
     </body>
