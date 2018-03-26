@@ -13,7 +13,7 @@ class YoutubeService{
 
 	public function __construct()
 	{
-		$this->youtubePlaylist = $this->setYoutubePlaylist();
+		$this->youtubePlaylist = $this->setDefaultYoutubePlaylist();
 
 		$this->defaultYoutubePlaylist = '潮物開箱';
 	}
@@ -22,7 +22,7 @@ class YoutubeService{
 	 * 設定預設播放清單
 	 * @return array Playlist
 	 */
-	public function setYoutubePlaylist()
+	public function setDefaultYoutubePlaylist()
     {
         return [
             '潮物開箱' => [
@@ -41,6 +41,16 @@ class YoutubeService{
                 'img' => 'https://i.ytimg.com/vi/tq9mkg6oTVM/hqdefault.jpg',
             ],
         ];
+    }
+
+    /**
+     * 取得影片
+     * @param  string $v video id
+     * @return object $vedio
+     */
+    public function getVideo($v = '')
+    {
+    	return Youtube::getVideoInfo($v);
     }
 
     /**
@@ -65,6 +75,8 @@ class YoutubeService{
 
     	if(count($datas) > 0 && $maxResults != null){
     		$videos = array_slice($datas, 0, $maxResults);
+    	}else{
+    		$videos = $datas;
     	}
 
     	krsort($videos);
@@ -73,9 +85,9 @@ class YoutubeService{
     }
 
     /**
- 	 * get watch blade data info
- 	 * @param  [type] $request [description]
- 	 * @return [type]          [description]
+ 	 * 取得 watch 頁面資料
+ 	 * @param  object $request http request
+ 	 * @return array
  	 */
  	public function getWatchInfo($request)
  	{
@@ -84,63 +96,36 @@ class YoutubeService{
         $playlist = $request->input('playlist','');
 
         if($v != ''){
-        	$response = $this->watchByID($v);
+        	$response = $this->getWatchInfoByVideoID($v);
         }else{
-        	$response = $this->watchByName($playlist);
+        	$response = $this->getWatchInfoByPlaylistName($playlist);
         }
 
         if(!$response['status']){
-        	$response = $this->watchDefault();
+        	$response = $this->getWatchInfoByDefault();
         }
 
         return $response;
  	}
 
-    /**
-     * 取得影片
-     * @param  string $v video id
-     * @return object $vedio
+ 	/**
+     * 透過影片 ID 取得 watch 頁面資料
+     * @param  string $v video ID
+     * @return array
      */
-    private function getVideoByID($v = '')
-    {
-    	return Youtube::getVideoInfo($v);
-    }
-
-    /**
-     * 取得播放清單ID
-     * @param  string $v                影片ID
-     * @param  array  $allPlaylistItems 所有播放清單影片
-     * @return string
-     */
-    private function getPlaylistItemsIDByID($v,$allPlaylistItems)
-    {
-		$PlaylistItemsID = '';
-
-    	foreach($allPlaylistItems as $item){
- 			if($v == $item->contentDetails->videoId){
- 				$PlaylistItemsID = $item->PlaylistItemsID;
- 			}
- 		}
-
- 		return $PlaylistItemsID;
-    }
-
-    /**
-     * get watch blade data info by v parameter
-     * @param  [type] $v [description]
-     * @return [type]    [description]
-     */
- 	private function watchByID($v)
+ 	private function getWatchInfoByVideoID($v)
  	{
- 		$response = [];
-
- 		$video = $this->getVideoByID($v);
+ 		$video = $this->getVideo($v);
 
  		if(!$video){
  			return ['status' => false];
  		}
 
-		$PlaylistItemsID = $this->getPlaylistItemsIDByID($v, $this->getAllPlaylistItems());
+		$PlaylistItemsID = $this->getVideoPlaylistItemsID($v, $this->getAllPlaylistItems());
+
+		if($PlaylistItemsID === ''){
+			return ['status' => false];
+		}
 
 		$items = Youtube::getPlaylistItemsByPlaylistId($PlaylistItemsID);
 
@@ -154,18 +139,19 @@ class YoutubeService{
 		];
  	}
 
- 	/**
- 	 * 取得播放清單ID
- 	 * @param  string $playlist 播放清單名稱
- 	 * @return string           
- 	 */
- 	private function getPlaylistItemsByName($playlist)
+    /**
+     * 取得影片播放清單ID
+     * @param  string $v                影片ID
+     * @param  array  $allPlaylistItems 所有播放清單影片
+     * @return string
+     */
+    private function getVideoPlaylistItemsID($v,$allPlaylistItems)
     {
 		$PlaylistItemsID = '';
 
-    	foreach($this->youtubePlaylist as $key => $list){
- 			if($playlist == $key){
- 				$PlaylistItemsID = $list['id'];
+    	foreach($allPlaylistItems as $item){
+ 			if($v === $item->contentDetails->videoId){
+ 				$PlaylistItemsID = $item->PlaylistItemsID;
  			}
  		}
 
@@ -173,15 +159,15 @@ class YoutubeService{
     }
 
     /**
-     * get watch blade data info by playlist parameter
-     * @param  [type] $playlist [description]
-     * @return [type]           [description]
+     * 透過播放清單名稱取得 watch 頁面資料
+     * @param  string $playlist 播放清單名稱
+     * @return array
      */
-    private function watchByName($playlist)
+    private function getWatchInfoByPlaylistName($playlist)
  	{
  		$response = [];
 
- 		$PlaylistItemsID = $this->getPlaylistItemsByName($playlist);
+ 		$PlaylistItemsID = $this->getPlaylistItemsByPlaylistName($playlist);
 
  		if($PlaylistItemsID == ''){
  			return ['status' => false];
@@ -189,7 +175,7 @@ class YoutubeService{
 
 		$items = Youtube::getPlaylistItemsByPlaylistId($PlaylistItemsID);
 
-		$video = $this->getVideoByID($items[0]->contentDetails->videoId);
+		$video = $this->getVideo($items[0]->contentDetails->videoId);
 
 		$nextVideoID = $this->getPlaylistItemsNextVideoID($items[0]->contentDetails->videoId,$items);
 
@@ -202,12 +188,30 @@ class YoutubeService{
  	}
 
  	/**
- 	 * watch blade default data info
- 	 * @return [type] [description]
+ 	 * 取得播放清單ID
+ 	 * @param  string $playlist 播放清單名稱
+ 	 * @return string           
  	 */
- 	private function watchDefault()
+ 	private function getPlaylistItemsByPlaylistName($playlist)
+    {
+		$PlaylistItemsID = '';
+
+    	foreach($this->youtubePlaylist as $key => $list){
+ 			if($playlist == $key){
+ 				$PlaylistItemsID = $list['id'];
+ 			}
+ 		}
+
+ 		return $PlaylistItemsID;
+    }
+
+ 	/**
+ 	 * 透過預設資料取得 watch 頁面資料getWatchInfoByDefault
+ 	 * @return array
+ 	 */
+ 	private function getWatchInfoByDefault()
  	{
- 		return $this->watchByName($this->defaultYoutubePlaylist);
+ 		return $this->getWatchInfoByPlaylistName($this->defaultYoutubePlaylist);
  	}
 
  	/**

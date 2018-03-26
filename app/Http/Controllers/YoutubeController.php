@@ -34,7 +34,7 @@ class YoutubeController extends Controller
 
     public function watch(Request $request)
     {
-        $reponse = $this->youtubeService->getWatchInfo($request);
+        $reponse = $this->youtubeService->getWatchInfo($request);dd($reponse);
 
         return view('youtube.watch', [
             'video' => $reponse['video'],

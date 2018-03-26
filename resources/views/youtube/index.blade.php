@@ -82,7 +82,11 @@
                 </div> -->
                 @foreach($videos as $key => $video)
                     <div>
-                        <p><img src="{{ $youtubePresenter->getVideoImg($video) }}"></p>
+                        <p>
+                            <a href='{{ env('APP_URL').'/youtube/watch/?v='.$video->contentDetails->videoId }}' target="_blank">
+                                <img src="{{ $youtubePresenter->getVideoImg($video) }}">
+                            </a>
+                        </p>
                         <p>No：{{ $key }}</p>
                         <p>類別：{{ $video->PlaylistItmesName }}</p>
                         <p>標題：{{ $youtubePresenter->getVideoTitle($video) }}</p>
