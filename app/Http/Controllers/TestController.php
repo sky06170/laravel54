@@ -6,13 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ArticleRepository;
 use Carbon\Carbon;
-use App\Traits\Date;
 use App\Services\Facebook\Pages;
 
 class TestController extends Controller
 {
-
-    use Date;
 
     protected $articleRepo;
 
@@ -56,13 +53,21 @@ class TestController extends Controller
      */
     public function postMessage()
     {
-        $publish_time = '2018-03-18 16:23:00';
+        $publish_time = '2018-03-19 15:23:00';
 
         $message = 'test post';
 
         $pages = new Pages();
 
-        $result = $pages->publishScheduled($message,$publish_time);
+        if(isset($publish_time)){
+
+            $result = $pages->publishScheduled($message,$publish_time);
+
+        }else{
+
+            $result = $pages->publish($message);
+
+        }
 
         return $result;
     }
