@@ -25,7 +25,7 @@ class TestController extends Controller
      */
     public function index()
     {
-        //return 'Welcome to test!';
+        phpinfo();
     }
 
     public function publishArticle()

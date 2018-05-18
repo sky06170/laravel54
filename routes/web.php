@@ -29,6 +29,14 @@ Route::group(['prefix' => '/test'], function(){
 
 });
 
+Route::get('sendmail', function() {
+    $data = ['name' => 'Test'];
+    Mail::send('welcome', $data, function($message) {
+    $message->to('rick.su@juksy.com')->subject('This is test email');
+ });
+ return 'Your email has been sent successfully!';
+});
+
 Route::group(['prefix' => 'youtube'], function(){
 
 	Route::get('/', 'YoutubeController@index');
@@ -37,3 +45,15 @@ Route::group(['prefix' => 'youtube'], function(){
 
 });
 
+Route::group(['prefix' => 'elastic'], function(){
+
+	Route::get('/', 'ElasticController@index');
+
+	Route::get('/{id}/edit', 'ElasticController@edit');
+
+});
+
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

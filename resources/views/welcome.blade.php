@@ -63,6 +63,8 @@
                 margin-bottom: 30px;
             }
         </style>
+        <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+        <script src="{{ asset('js/handlebars-v4.0.11.js') }}" defer></script>
     </head>
     <body>
         <div class="flex-center position-ref full-height">
@@ -91,5 +93,21 @@
                 </div>
             </div>
         </div>
+        <script>
+            $(function(){
+                var source   = document.getElementById("entry-template").innerHTML;
+                var template = Handlebars.compile(source);
+                var context = {title: "My New Post", body: "This is my first post!"};
+                var html    = template(context);
+            });
+        </script>
+        <script id="entry-template" type="text/x-handlebars-template">
+            <div class="entry">
+                <h1>@{{title}}</h1>
+                <div class="body">
+                    @{{body}}
+                </div>
+            </div>
+        </script>
     </body>
 </html>

@@ -23,7 +23,7 @@
             }
 
             .full-height {
-                height: 100vh;
+                height: 1000vh;
             }
 
             .flex-center {
@@ -73,13 +73,6 @@
                     Youtube
                 </div>
                 <hr>
-                <!-- <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div> -->
                 @foreach($videos as $key => $video)
                     <div>
                         <p>
@@ -87,7 +80,7 @@
                                 <img src="{{ $youtubePresenter->getVideoImg($video) }}">
                             </a>
                         </p>
-                        <p>No：{{ $key }}</p>
+                        <p>No：{{ $key+1 }}</p>
                         <p>類別：{{ $video->PlaylistItmesName }}</p>
                         <p>標題：{{ $youtubePresenter->getVideoTitle($video) }}</p>
                     </div>

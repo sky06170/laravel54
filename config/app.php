@@ -169,6 +169,7 @@ return [
         Laravel\Tinker\TinkerServiceProvider::class,
         Juksy\Shredder\ShredderServiceProvider::class,
         Madcoda\Youtube\YoutubeServiceProviderLaravel5::class,
+        Cviebrock\LaravelElasticsearch\ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -228,6 +229,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Youtube' => Madcoda\Youtube\Facades\Youtube::class,
+        'Elasticsearch' => Cviebrock\LaravelElasticsearch\Facade::class,
 
     ],
 
