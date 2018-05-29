@@ -278,9 +278,8 @@ module.exports = function normalizeComponent (
 /***/ }),
 
 /***/ 6:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_Vue, __webpack_provided_window_dot_jQuery, __webpack_provided_window_dot_axios) {__webpack_provided_window_dot_Vue = __webpack_require__(1);
 
 window._ = __webpack_require__(8);
@@ -335,7 +334,7 @@ if (token) {
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(2), __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(2), __webpack_require__(3)))
 
 /***/ }),
 

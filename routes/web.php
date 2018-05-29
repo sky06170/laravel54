@@ -18,6 +18,9 @@ Route::group(['prefix' => '/vue'], function(){
     Route::get('/count', function () {
         return view('count');
     });
+    Route::get('/article/{id}', function () {
+        return view('article');
+    });
 });
 
 // Route::get('/', function () {
