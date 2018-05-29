@@ -11,9 +11,18 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::group(['prefix' => '/vue'], function(){
+    Route::get('/hello', function () {
+        return view('hello');
+    });
+    Route::get('/count', function () {
+        return view('count');
+    });
 });
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Route::group(['prefix' => '/test'], function(){
 
