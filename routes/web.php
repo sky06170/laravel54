@@ -21,6 +21,9 @@ Route::group(['prefix' => '/vue'], function(){
     Route::get('/article/{id}', function () {
         return view('article');
     });
+    Route::get('/draggable', function () {
+        return view('draggable');
+    });
 });
 
 // Route::get('/', function () {

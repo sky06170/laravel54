@@ -38,7 +38,7 @@ var app = new Vue({
 
 /***/ }),
 
-/***/ 4:
+/***/ 3:
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -152,7 +152,7 @@ module.exports = function normalizeComponent (
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(41)
 /* template */
@@ -302,7 +302,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-__webpack_provided_window_dot_axios = __webpack_require__(3);
+__webpack_provided_window_dot_axios = __webpack_require__(4);
 
 __webpack_provided_window_dot_axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -334,7 +334,7 @@ if (token) {
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(2), __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(2), __webpack_require__(4)))
 
 /***/ }),
 

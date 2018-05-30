@@ -18,7 +18,12 @@ const routes = [
     	path: '/vue/article/:id',
     	name: 'vue.article',
     	component: require('./components/Article.vue')
-    }
+    },
+    {
+    	path: '/vue/draggable',
+    	name: 'vue.draggable',
+    	component: require('./components/Draggable.vue')
+    },
 ];
 
 //Router Instance

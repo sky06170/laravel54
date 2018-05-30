@@ -10,6 +10,7 @@
 		<router-link to="/vue/hello">Go to Hello</router-link>
     	<router-link to="/vue/count">Go to Count</router-link>
     	<router-link to="/vue/article/1">Go to Article</router-link>
+    	<router-link to="/vue/draggable">Go to Draggable</router-link>
     	<router-view></router-view>
 		@yield('content')
 	</div>
