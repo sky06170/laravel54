@@ -14,6 +14,7 @@
 			}
 		},
 		created: function() {
+			console.log(this.$store.state.Article.articleId);
 			this.loadData();
 		},
 		methods: {

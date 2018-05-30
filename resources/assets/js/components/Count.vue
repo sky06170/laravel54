@@ -1,28 +1,26 @@
 <template>
 	<div>
-		<p>計數器:{{ count }}</p>
-		<button @click="increment()">+</button>
-		<button @click="decrement()">-</button>
-		<input type="number" v-model="count">
+		<p>count:{{ count }}</p>
+		<button @click="incrementBtn()">+</button>
+		<button @click="decrementBtn()">-</button>
 	</div>
 </template>
 
 <script>
+	import { mapGetters } from 'vuex';
+
 	export default {
-		data () {
-			return {
-				count: 0
-			}
+		computed: {
+			...mapGetters([
+				'count'
+			]),
 		},
 		methods: {
-			increment() {
-				return this.count++;
+			incrementBtn () {
+				this.$store.dispatch('increment', [])
 			},
-			decrement() {
-				if(this.count == 0) {
-					return 0;
-				}
-				return this.count--;
+			decrementBtn () {
+				this.$store.dispatch('decrement', [])
 			}
 		}
 	}
