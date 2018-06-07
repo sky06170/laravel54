@@ -1,15 +1,15 @@
 webpackJsonp([2],{
 
-/***/ 17:
+/***/ 19:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(18);
-module.exports = __webpack_require__(43);
+__webpack_require__(20);
+module.exports = __webpack_require__(45);
 
 
 /***/ }),
 
-/***/ 18:
+/***/ 20:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_Vue, Vue) {
@@ -29,7 +29,7 @@ __webpack_provided_window_dot_Vue = __webpack_require__(0);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example', __webpack_require__(40));
+Vue.component('example', __webpack_require__(42));
 
 var app = new Vue({
   el: '#app'
@@ -148,15 +148,15 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 
-/***/ 40:
+/***/ 42:
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(41)
+var __vue_script__ = __webpack_require__(43)
 /* template */
-var __vue_template__ = __webpack_require__(42)
+var __vue_template__ = __webpack_require__(44)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -196,7 +196,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 41:
+/***/ 43:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -226,7 +226,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
-/***/ 42:
+/***/ 44:
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -270,7 +270,7 @@ if (false) {
 
 /***/ }),
 
-/***/ 43:
+/***/ 45:
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
@@ -2723,4 +2723,4 @@ if (typeof jQuery === 'undefined') {
 
 /***/ })
 
-},[17]);
+},[19]);
