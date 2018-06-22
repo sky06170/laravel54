@@ -26,9 +26,15 @@ Route::group(['prefix' => '/vue'], function(){
     });
 });
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::group(['prefix' => 'ticket'], function() {
+
+    Route::get('/createTickets', 'TicketController@createTickets');
+
+    Route::get('/bindUser', 'TicketController@bindUser');
+
+    Route::get('/', 'TicketController@index');
+
+});
 
 Route::group(['prefix' => '/test'], function(){
 
